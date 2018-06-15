@@ -23,5 +23,3 @@ train:
   epochs: 1000
   patience: 8
   shuffle: True
-evaluate:
-  batch_size: 1000

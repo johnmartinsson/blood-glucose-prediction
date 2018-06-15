@@ -95,7 +95,9 @@ def main(yaml_filepath):
     y_pred_last = model.predict(x_test)[:,-1].flatten()/scale
     y_test_last = y_test[:,-1].flatten()/scale
     rmse = metrics.root_mean_squared_error(y_test_last, y_pred_last)
-    print("RMSE: {}".format(rmse))
+
+    with open(os.path.join(cfg['train']['artifacts_path'], "rmse.txt"), "w") as outfile:
+        outfile.write("{}\n".format(rmse))
 
 def load_module(script_path):
     spec = importlib.util.spec_from_file_location("module.name", script_path)

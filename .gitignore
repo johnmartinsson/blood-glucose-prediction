@@ -4,3 +4,4 @@ __pycache__/
 .venv/
 */__pycache__
 *.pyc
+random_search_configs/
