@@ -1,0 +1,7 @@
+numpy
+pandas
+tensorflow
+matplotlib
+seaborn
+pyyaml
+h5py
