@@ -51,12 +51,12 @@ def main(yaml_filepath, mode):
     x_test  *= scale
     y_test  *= scale
 
-    # print("x_train.shape: ", x_train.shape)
-    # print("y_train.shape: ", y_train.shape)
-    # print("x_valid.shape: ", x_valid.shape)
-    # print("y_valid.shape: ", y_valid.shape)
-    # print("x_test.shape: ", x_test.shape)
-    # print("y_test.shape: ", y_test.shape)
+    print("x_train.shape: ", x_train.shape)
+    print("y_train.shape: ", y_train.shape)
+    print("x_valid.shape: ", x_valid.shape)
+    print("y_valid.shape: ", y_valid.shape)
+    print("x_test.shape: ", x_test.shape)
+    print("y_test.shape: ", y_test.shape)
 
     # training mode
     if mode == 'train':
@@ -99,9 +99,10 @@ def main(yaml_filepath, mode):
     # evaluation mode
     if mode == 'evaluate':
         model_path = os.path.join(cfg['train']['artifacts_path'], "model.hdf5")
+        loss_function = module_loss_function.load()
         model = tf.keras.models.load_model(
             model_path,
-            custom_objects = {'tf_gmse': module_loss_function.load()}
+            custom_objects = {loss_function.__name__: loss_function}
         )
         y_pred_last = model.predict(x_test)[:,-1].flatten()/scale
         y_test_last = y_test[:,-1].flatten()/scale
@@ -109,12 +110,10 @@ def main(yaml_filepath, mode):
         rmse = metrics.root_mean_squared_error(y_test_last, y_pred_last)
         with open(os.path.join(cfg['train']['artifacts_path'], "rmse.txt"), "w") as outfile:
             outfile.write("{}\n".format(rmse))
-        # print("rmse: ", rmse)
 
         seg = metrics.surveillance_error(y_test_last, y_pred_last)
         with open(os.path.join(cfg['train']['artifacts_path'], "seg.txt"), "w") as outfile:
             outfile.write("{}\n".format(seg))
-        # print("seg: ", seg)
 
 def load_module(script_path):
     spec = importlib.util.spec_from_file_location("module.name", script_path)
