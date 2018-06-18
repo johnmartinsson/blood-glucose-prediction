@@ -37,7 +37,7 @@ def main(xml_dir_path, output_dir):
                             'script_path': '../datasets/ohio.py',
                             'xml_path': xml_path,
                             'nb_past_steps': nb_past_steps,
-                            'nb_future_steps': nb_past_steps,
+                            'nb_future_steps': nb_future_steps,
                             'train_fraction': train_fraction,
                             'valid_fraction': valid_fraction,
                             'test_fraction': test_fraction,
