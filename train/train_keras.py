@@ -23,7 +23,7 @@ def train(model, x_train, y_train, x_valid, y_valid, batch_size, epochs,
                 filepath       = os.path.join(artifacts_path, "model.hdf5"),
                 monitor        = 'val_loss',
                 save_best_only = True,
-                period         = 30
+                period         = 10
             )
         ]
     )
