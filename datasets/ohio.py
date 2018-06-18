@@ -20,7 +20,7 @@ def load_glucose_data(xml_path, nb_past_steps, nb_future_steps):
     idx_breaks = np.argwhere(dt!=pd.Timedelta(5, 'm'))
 
     # It would be possible to load more features here
-    nd_glucose_level = df_glucose_level.as_matrix()
+    nd_glucose_level = df_glucose_level.values
     consecutive_segments = np.split(nd_glucose_level, idx_breaks.flatten())
 
     consecutive_segments = [c for c in consecutive_segments if len(c) >=
