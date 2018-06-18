@@ -9,10 +9,10 @@ def load():
 def tf_penalty(y, y_hat):
     aL = tf.constant(1.5)
     aH = tf.constant(1.0)
-    BL = tf.constant(30.0)
-    BH = tf.constant(100.0)
-    YL = tf.constant(10.0)
-    YH = tf.constant(20.0)
+    BL = tf.constant(90.0)
+    BH = tf.constant(300.0)
+    YL = tf.constant(30.0)
+    YH = tf.constant(60.0)
     TL = tf.constant(85.0)
     TH = tf.constant(155.0)
     t1 = aL*tf_sigmoid_(y, TL, BL)*tf_sigmoid(y_hat, y, YL)
@@ -23,8 +23,8 @@ def tf_penalty(y, y_hat):
 # Reference:
 # http://www.clear-lines.com/blog/post/S-shaped-market-adoption-curve.aspx
 def tf_sigmoid(x, a, e):
-    f1 = tf.constant(0.001)
-    f2 = tf.constant(0.999)
+    f1 = tf.constant(0.2)
+    f2 = tf.constant(0.8)
     t1 = a
     t2 = a+e
 
@@ -34,8 +34,8 @@ def tf_sigmoid(x, a, e):
     return 1/(1+tf.exp(-(x-x0)*alpha))
 
 def tf_sigmoid_(x, a, e):
-    f1 = tf.constant(0.999)
-    f2 = tf.constant(0.001)
+    f1 = tf.constant(0.8)
+    f2 = tf.constant(0.2)
     t1 = a-e
     t2 = a
 
