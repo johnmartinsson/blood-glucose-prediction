@@ -5,3 +5,5 @@ matplotlib
 seaborn
 pyyaml
 h5py
+scipy
+tqdm
