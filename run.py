@@ -9,13 +9,15 @@ import os
 import yaml
 import pprint
 import importlib.util
+import tensorflow as tf
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
                     stream=sys.stdout)
 
 import metrics
+from ClarkeErrorGrid import clarke_error_grid
 
-def main(yaml_filepath):
+def main(yaml_filepath, mode):
     """Example."""
     cfg = load_cfg(yaml_filepath)
 
@@ -28,10 +30,10 @@ def main(yaml_filepath):
     module_loss_function = load_module(cfg['loss_function']['script_path'])
     module_train         = load_module(cfg['train']['script_path'])
 
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(cfg)
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(cfg)
 
-    print("loading dataset ...")
+    # print("loading dataset ...")
     x_train, y_train, x_valid, y_valid, x_test, y_test = module_dataset.load_glucose_dataset(
         xml_path = cfg['dataset']['xml_path'],
         nb_past_steps   = int(cfg['dataset']['nb_past_steps']),
@@ -49,55 +51,70 @@ def main(yaml_filepath):
     x_test  *= scale
     y_test  *= scale
 
-    print("x_train.shape: ", x_train.shape)
-    print("y_train.shape: ", y_train.shape)
-    print("x_valid.shape: ", x_valid.shape)
-    print("y_valid.shape: ", y_valid.shape)
-    print("x_test.shape: ", x_test.shape)
-    print("y_test.shape: ", y_test.shape)
+    # print("x_train.shape: ", x_train.shape)
+    # print("y_train.shape: ", y_train.shape)
+    # print("x_valid.shape: ", x_valid.shape)
+    # print("y_valid.shape: ", y_valid.shape)
+    # print("x_test.shape: ", x_test.shape)
+    # print("y_test.shape: ", y_test.shape)
 
-    print("loading model ...")
-    model = module_model.load(
-        x_train.shape[1:],
-        y_train.shape[1],
-        cfg['model']['model_cfg']
-    )
+    # training mode
+    if mode == 'train':
+        print("loading model ...")
+        model = module_model.load(
+            x_train.shape[1:],
+            y_train.shape[1],
+            cfg['model']['model_cfg']
+        )
 
-    print("loading optimizer ...")
-    optimizer = module_optimizer.load(
-        float(cfg['optimizer']['learning_rate'])
-    )
+        print("loading optimizer ...")
+        optimizer = module_optimizer.load(
+            float(cfg['optimizer']['learning_rate'])
+        )
 
-    print("loading loss function ...")
-    loss_function = module_loss_function.load()
+        print("loading loss function ...")
+        loss_function = module_loss_function.load()
 
-    model.compile(
-        optimizer=optimizer,
-        loss=loss_function
-    )
+        model.compile(
+            optimizer=optimizer,
+            loss=loss_function
+        )
 
-    print(model.summary())
+        print(model.summary())
 
-    print("training model ...")
-    model = module_train.train(
-        model          = model,
-        x_train        = x_train,
-        y_train        = y_train,
-        x_valid        = x_valid,
-        y_valid        = y_valid,
-        batch_size     = int(cfg['train']['batch_size']),
-        epochs         = int(cfg['train']['epochs']),
-        patience       = int(cfg['train']['patience']),
-        shuffle        = cfg['train']['shuffle']=='True',
-        artifacts_path = cfg['train']['artifacts_path']
-    )
+        print("training model ...")
+        model = module_train.train(
+            model          = model,
+            x_train        = x_train,
+            y_train        = y_train,
+            x_valid        = x_valid,
+            y_valid        = y_valid,
+            batch_size     = int(cfg['train']['batch_size']),
+            epochs         = int(cfg['train']['epochs']),
+            patience       = int(cfg['train']['patience']),
+            shuffle        = cfg['train']['shuffle']=='True',
+            artifacts_path = cfg['train']['artifacts_path']
+        )
 
-    y_pred_last = model.predict(x_test)[:,-1].flatten()/scale
-    y_test_last = y_test[:,-1].flatten()/scale
-    rmse = metrics.root_mean_squared_error(y_test_last, y_pred_last)
+    # evaluation mode
+    if mode == 'evaluate':
+        model_path = os.path.join(cfg['train']['artifacts_path'], "model.hdf5")
+        model = tf.keras.models.load_model(
+            model_path,
+            custom_objects = {'tf_gmse': module_loss_function.load()}
+        )
+        y_pred_last = model.predict(x_test)[:,-1].flatten()/scale
+        y_test_last = y_test[:,-1].flatten()/scale
 
-    with open(os.path.join(cfg['train']['artifacts_path'], "rmse.txt"), "w") as outfile:
-        outfile.write("{}\n".format(rmse))
+        rmse = metrics.root_mean_squared_error(y_test_last, y_pred_last)
+        with open(os.path.join(cfg['train']['artifacts_path'], "rmse.txt"), "w") as outfile:
+            outfile.write("{}\n".format(rmse))
+        # print("rmse: ", rmse)
+
+        seg = metrics.surveillance_error(y_test_last, y_pred_last)
+        with open(os.path.join(cfg['train']['artifacts_path'], "seg.txt"), "w") as outfile:
+            outfile.write("{}\n".format(seg))
+        # print("seg: ", seg)
 
 def load_module(script_path):
     spec = importlib.util.spec_from_file_location("module.name", script_path)
@@ -158,9 +175,14 @@ def get_parser():
                         help="experiment definition file",
                         metavar="FILE",
                         required=True)
+    parser.add_argument("-m", "--mode",
+                        dest="mode",
+                        help="mode of run",
+                        metavar="FILE",
+                        required=True)
     return parser
 
 
 if __name__ == '__main__':
     args = get_parser().parse_args()
-    main(args.filename)
+    main(args.filename, args.mode)
