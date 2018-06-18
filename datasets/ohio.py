@@ -6,6 +6,8 @@ import utils
 def load_glucose_dataset(xml_path, nb_past_steps, nb_future_steps, train_fraction,
         valid_fraction, test_fraction):
     xs, ys = load_glucose_data(xml_path, nb_past_steps, nb_future_steps)
+    ys = np.expand_dims(ys, axis=1)
+    print(ys.shape)
 
     x_train, x_valid, x_test = split_data(xs, train_fraction,
             valid_fraction, test_fraction)
@@ -26,7 +28,7 @@ def load_glucose_data(xml_path, nb_past_steps, nb_future_steps):
     consecutive_segments = [c for c in consecutive_segments if len(c) >=
             nb_past_steps+nb_future_steps]
 
-    sups = [utils.sequence_to_supervised_all(c, nb_past_steps, nb_future_steps) for
+    sups = [utils.sequence_to_supervised(c, nb_past_steps, nb_future_steps) for
             c in consecutive_segments]
 
     xss = [sup[0] for sup in sups]
