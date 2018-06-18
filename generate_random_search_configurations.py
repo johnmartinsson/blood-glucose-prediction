@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import yaml
 import os
 
@@ -17,8 +19,8 @@ def main(xml_dir_path, output_dir):
         'gmse'
     ]
 
-    for i_run in range(10):
-        for pid in [559, 570, 588, 563, 575, 591]:
+    for i_run in range(2):
+        for pid in [559]: #, 570, 588, 563, 575, 591]:
             for i_loss_function, loss_function_script_path in enumerate(loss_function_script_paths):
                 for nb_future_steps in [6,12,18,24]:
                     loss_function_name = loss_function_names[i_loss_function]
@@ -27,8 +29,8 @@ def main(xml_dir_path, output_dir):
                             'basic_lstm_pid_{}_loss_{}_ph_{}_run_{}.yaml'.format(
                             pid, loss_function_name, nb_future_steps, i_run))
                     artifacts_path =\
-                    '../artifacts/basic_lstm_pid_{}_loss_{}_ph_{}_run_{}/'.format(
-                            pid, loss_function_name, nb_future_steps, i_run)
+                    '../artifacts/{}/basic_lstm_pid_{}_loss_{}_ph_{}_run_{}/'.format(
+                            output_dir, pid, loss_function_name, nb_future_steps, i_run)
                     xml_path = os.path.join(xml_dir_path, '{}-ws-training.xml'.format(
                                 pid))
 
