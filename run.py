@@ -60,13 +60,6 @@ def main(yaml_filepath, mode):
 
     # training mode
     if mode == 'train':
-        print("loading model ...")
-        model = module_model.load(
-            x_train.shape[1:],
-            y_train.shape[1],
-            cfg['model']['model_cfg']
-        )
-
         print("loading optimizer ...")
         optimizer = module_optimizer.load(
             float(cfg['optimizer']['learning_rate'])
@@ -74,6 +67,14 @@ def main(yaml_filepath, mode):
 
         print("loading loss function ...")
         loss_function = module_loss_function.load()
+
+        print("loading model ...")
+        model = module_model.load(
+            x_train.shape[1:],
+            y_train.shape[1]*2,
+            cfg['model']['model_cfg']
+        )
+
 
         model.compile(
             optimizer=optimizer,
