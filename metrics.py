@@ -13,7 +13,7 @@ def surveillance_error(targets, predictions):
 
     ma = np.max(data)
     scores = [f(t, p) for (t, p) in zip(targets, predictions)]
-    print(scores)
+    # print(scores)
     return np.sum(scores)/(ma*len(targets))
 
 def root_mean_squared_error(targets, predictions):
