@@ -14,6 +14,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
                     stream=sys.stdout)
 
+import numpy as np
 import metrics
 from ClarkeErrorGrid import clarke_error_grid
 
@@ -93,7 +94,7 @@ def main(yaml_filepath, mode):
             batch_size     = int(cfg['train']['batch_size']),
             epochs         = int(cfg['train']['epochs']),
             patience       = int(cfg['train']['patience']),
-            shuffle        = cfg['train']['shuffle']=='True',
+            shuffle        = cfg['train']['shuffle'],
             artifacts_path = cfg['train']['artifacts_path']
         )
 
@@ -107,6 +108,7 @@ def main(yaml_filepath, mode):
         )
         y_pred_last = model.predict(x_test)[:,-1].flatten()/scale
         y_test_last = y_test[:,-1].flatten()/scale
+        y_pred_t0_last = np.array([x[-1] for x in x_test])/scale
 
         rmse = metrics.root_mean_squared_error(y_test_last, y_pred_last)
         with open(os.path.join(cfg['train']['artifacts_path'], "rmse.txt"), "w") as outfile:
@@ -115,6 +117,10 @@ def main(yaml_filepath, mode):
         seg = metrics.surveillance_error(y_test_last, y_pred_last)
         with open(os.path.join(cfg['train']['artifacts_path'], "seg.txt"), "w") as outfile:
             outfile.write("{}\n".format(seg))
+
+        t0_rmse = metrics.root_mean_squared_error(y_test_last, y_pred_t0_last)
+        with open(os.path.join(cfg['train']['artifacts_path'], "t0_rmse.txt"), "w") as outfile:
+            outfile.write("{}\n".format(t0_rmse))
 
 def load_module(script_path):
     spec = importlib.util.spec_from_file_location("module.name", script_path)
