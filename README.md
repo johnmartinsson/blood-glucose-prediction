@@ -16,6 +16,12 @@ Except for that, everything should run out of the box.
 
     $> chmod +x run.py
     $> ./run.py --file experiments/example.yaml -m train
+    
+All results are collected and stored in the 'artifacts' directory. To visualize the training session you can run
+
+    $> tensorboard --logdir artifacts/<artifacts-path>
+
+and fire up tensorboard.
 
 # Reproduce parameter search
 
