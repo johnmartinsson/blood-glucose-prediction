@@ -16,7 +16,6 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
 
 import numpy as np
 import metrics
-from ClarkeErrorGrid import clarke_error_grid
 
 def main(yaml_filepath, mode):
     """Example."""
