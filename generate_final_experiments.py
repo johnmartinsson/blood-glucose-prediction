@@ -6,7 +6,7 @@ import os
 def main(xml_dir_path, output_dir):
     for i_run in range(2):
         for pid in [559, 570, 588, 563, 575, 591]:
-            for nb_future_steps in [6]:
+            for nb_future_steps in [6, 12]:
                 config_path =\
                 os.path.join(output_dir,
                         'basic_lstm_pid_{}_future_steps_{}_run_{}.yaml'.format(pid,
