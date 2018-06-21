@@ -5,3 +5,5 @@ __pycache__/
 */__pycache__
 *.pyc
 random_search_configs/
+*.yaml
+*.png
