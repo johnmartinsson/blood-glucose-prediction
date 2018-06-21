@@ -6,7 +6,7 @@ import os
 def main(xml_dir_path, output_dir):
     for i_run in range(2):
         for pid in [559, 570, 588, 563, 575, 591]:
-            for nb_future_steps in [12]:
+            for nb_future_steps in [6]:
                 config_path =\
                 os.path.join(output_dir,
                         'basic_lstm_pid_{}_future_steps_{}_run_{}.yaml'.format(pid,
@@ -36,17 +36,17 @@ def main(xml_dir_path, output_dir):
                     },
                     'optimizer' : {
                         'script_path': '../optimizers/adam_keras.py',
-                        'learning_rate': 0.00001
+                        'learning_rate': 0.001
                     },
                     'loss_function' : {
-                        'script_path': '../loss_functions/nl_keras.py'
+                        'script_path': '../loss_functions/mse_keras.py'
                     },
                     'train' : {
                         'script_path': '../train/train_keras.py',
                         'artifacts_path': artifacts_path,
                         'batch_size': 128,
                         'epochs': 10000,
-                        'patience': 256,
+                        'patience': 32,
                         'shuffle': True
                     }
                 }

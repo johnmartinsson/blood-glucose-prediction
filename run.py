@@ -72,7 +72,7 @@ def main(yaml_filepath, mode):
         print("loading model ...")
         model = module_model.load(
             x_train.shape[1:],
-            y_train.shape[1]*2,
+            y_train.shape[1], # XXX: change to y_train.shape[1]*2 if NLL is used
             cfg['model']['model_cfg']
         )
 

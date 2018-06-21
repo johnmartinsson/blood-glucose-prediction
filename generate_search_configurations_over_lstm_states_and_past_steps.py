@@ -13,9 +13,9 @@ def main(xml_dir_path, output_dir):
     nb_future_steps = 6
 
     for i_run in range(5):
-        for pid in [559, 588, 591]:
-            for nb_past_steps in [6,12,24,36,48]:
-                for nb_lstm_states in [8,16,32,64,96,128]:
+        for pid in [559, 591]:
+            for nb_past_steps in [6,24,48]:
+                for nb_lstm_states in [8,32,96,128]:
                     config_path =\
                     os.path.join(output_dir,
                             'basic_lstm_pid_{}_past_steps_{}_lstm_states_{}_run_{}.yaml'.format( pid, nb_past_steps, nb_lstm_states, i_run))
@@ -51,8 +51,8 @@ def main(xml_dir_path, output_dir):
                         'train' : {
                             'script_path': '../train/train_keras.py',
                             'artifacts_path': artifacts_path,
-                            'batch_size': 256,
-                            'epochs': 1000,
+                            'batch_size': 128,
+                            'epochs': 200,
                             'patience': 8,
                             'shuffle': True
                         }
