@@ -15,4 +15,16 @@ to train the model for in the experiment configuration file (YAML file).
 Except for that, everything should run out of the box.
 
     $> chmod +x run.py
-    $> ./run --file experiments/example.yaml -m train
+    $> ./run.py --file experiments/example.yaml -m train
+
+# Reproduce parameter search
+
+    $> mkdir parameter_search
+    $> python generate_search_configurations_over_lstm_states_and_past_steps.py -f <path-to-ohio-xml-file-dir> -o final_experiments
+    $> ./train_all.sh parameter_search
+
+# Reproduce final results
+
+    $> mkdir final_experiments
+    $> python generate_final_experiments.py -f <path-to-ohio-xml-file-dir> -o final_experiments
+    $> ./train_all.sh final_experiments
