@@ -10,4 +10,4 @@ to train the model for in the experiment configuration file (YAML file).
 Except for that, everything should run out of the box.
 
     $> chmod +x run.py
-    $> run --file experiments/example.yaml
+    $> ./run --file experiments/example.yaml -m train
