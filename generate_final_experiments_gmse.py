@@ -39,7 +39,7 @@ def main(xml_dir_path, output_dir):
                         'learning_rate': 0.001
                     },
                     'loss_function' : {
-                        'script_path': '../loss_functions/mse_keras.py'
+                        'script_path': '../loss_functions/gmse_keras.py'
                     },
                     'train' : {
                         'script_path': '../train/train_keras.py',
@@ -47,7 +47,8 @@ def main(xml_dir_path, output_dir):
                         'batch_size': 128,
                         'epochs': 10000,
                         'patience': 32,
-                        'shuffle': True
+                        'shuffle': True,
+                        'seed':i_run
                     }
                 }
 
