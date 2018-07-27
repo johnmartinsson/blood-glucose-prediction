@@ -20,6 +20,8 @@ import metrics
 def main(yaml_filepath, mode):
     """Example."""
     cfg = load_cfg(yaml_filepath)
+    seed = int(cfg['train']['seed'])
+    np.random.seed(seed)
 
     # Print the configuration - just to make sure that you loaded what you
     # wanted to load
@@ -67,14 +69,21 @@ def main(yaml_filepath, mode):
 
         print("loading loss function ...")
         loss_function = module_loss_function.load()
+        print("loaded function {} ...".format(loss_function.__name__))
 
         print("loading model ...")
-        model = module_model.load(
-            x_train.shape[1:],
-            y_train.shape[1]*2, # XXX: change to y_train.shape[1] if MSE is used
-            cfg['model']['model_cfg']
-        )
-
+        if loss_function.__name__ == 'tf_nll':
+            model = module_model.load(
+                x_train.shape[1:],
+                y_train.shape[1]*2,
+                cfg['model']['model_cfg']
+            )
+        else:
+            model = module_model.load(
+                x_train.shape[1:],
+                y_train.shape[1],
+                cfg['model']['model_cfg']
+            )
 
         model.compile(
             optimizer=optimizer,
