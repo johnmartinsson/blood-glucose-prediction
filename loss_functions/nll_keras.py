@@ -1,9 +1,9 @@
 import tensorflow as tf
 
 def load():
-    return tf_negative_log_normal_density_loss
+    return tf_nll
 
-def tf_negative_log_normal_density_loss(y_true, y_pred):
+def tf_nll(y_true, y_pred):
     y_var = y_pred[:,:1]
     y_mean = y_pred[:,1:]
     y_std  = tf.sqrt(tf.abs(y_var))

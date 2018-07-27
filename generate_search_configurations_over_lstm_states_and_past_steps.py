@@ -8,7 +8,7 @@ def main(xml_dir_path, output_dir):
     valid_fraction = 0.2
     test_fraction = 0.2
 
-    loss_function_script_path = '../loss_functions/nl_keras.py'
+    loss_function_script_path = '../loss_functions/nll_keras.py'
     loss_function_name = 'nl'
     nb_future_steps = 6
 
