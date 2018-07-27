@@ -26,8 +26,8 @@ and fire up tensorboard.
 # Reproduce parameter search
 
     $> mkdir parameter_search
-    $> python generate_random_search_configurations.py -f <path-to-ohio-xml-file-dir> -o random_search
-    $> ./train_all.sh random_search
+    $> python generate_search_configurations_over_lstm_states_and_past_steps.py -f <path-to-ohio-xml-file-dir> -o parameter_search
+    $> ./train_all.sh parameter_search
 
 # Reproduce final results
 
