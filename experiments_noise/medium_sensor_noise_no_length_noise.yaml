@@ -11,8 +11,7 @@ dataset:
   test_fraction: 0.2
 model:
   script_path: ../models/basic_lstm_independent_keras.py
-  model_cfg:
-    nb_lstm_states: 32
+  nb_lstm_states: 32
 optimizer:
   script_path: ../optimizers/adam_keras.py
   learning_rate: 1e-4
@@ -22,7 +21,7 @@ train:
   script_path: ../train/train_keras.py
   artifacts_path: ../artifacts/medium_sensor_noise_no_length_noise/
   batch_size: 128
-  epochs: 1000
-  patience: 1000
+  epochs: 10000
+  patience: 100
   shuffle: True
   seed: 0
