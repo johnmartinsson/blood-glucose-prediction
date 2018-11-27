@@ -3,16 +3,31 @@ import pandas as pd
 import numpy as np
 import utils
 
-def load_glucose_dataset(xml_path, nb_past_steps, nb_future_steps, train_fraction,
-        valid_fraction, test_fraction):
+def load_dataset(cfg):
+    xml_path        = cfg['xml_path']
+    nb_past_steps   = int(cfg['nb_past_steps'])
+    nb_future_steps = int(cfg['nb_future_steps'])
+    train_fraction  = float(cfg['train_fraction'])
+    valid_fraction  = float(cfg['valid_fraction'])
+    test_fraction   = float(cfg['test_fraction'])
+
     xs, ys = load_glucose_data(xml_path, nb_past_steps, nb_future_steps)
     ys = np.expand_dims(ys, axis=1)
     print(ys.shape)
 
-    x_train, x_valid, x_test = split_data(xs, train_fraction,
+    x_train, x_valid, x_test = utils.split_data(xs, train_fraction,
             valid_fraction, test_fraction)
-    y_train, y_valid, y_test = split_data(ys, train_fraction,
+    y_train, y_valid, y_test = utils.split_data(ys, train_fraction,
             valid_fraction, test_fraction)
+
+    # scale data
+    scale = float(cfg['scale'])
+    x_train *= scale
+    y_train *= scale
+    x_valid *= scale
+    y_valid *= scale
+    x_test  *= scale
+    y_test  *= scale
 
     return x_train, y_train, x_valid, y_valid, x_test, y_test
 
@@ -38,15 +53,6 @@ def load_glucose_data(xml_path, nb_past_steps, nb_future_steps):
     ys = np.concatenate(yss)
 
     return np.expand_dims(xs, axis=2), ys
-
-def split_data(xs, train_fraction, valid_fraction, test_fraction):
-    n = len(xs)
-    nb_train = int(np.ceil(train_fraction*n))
-    nb_valid = int(np.ceil(valid_fraction*n))
-    i_end_train = nb_train
-    i_end_valid = nb_train+nb_valid
-
-    return np.split(xs, [i_end_train, i_end_valid])
 
 def load_ohio_series(xml_path, variate_name, attribute, time_attribue="ts"):
     tree = ET.parse(xml_path)
