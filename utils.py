@@ -32,6 +32,17 @@ def sequence_to_supervised(data, nb_past_steps, nb_steps_in_future):
 
     return np.array(x), np.array(y)
 
+def split_data(xs, train_fraction, valid_fraction, test_fraction):
+    n = len(xs)
+    nb_train = int(np.ceil(train_fraction*n))
+    nb_valid = int(np.ceil(valid_fraction*n))
+    i_end_train = nb_train
+    i_end_valid = nb_train+nb_valid
+
+    return np.split(xs, [i_end_train, i_end_valid])
+
+
+
 def sequence_to_supervised_all(data, nb_past_steps, nb_future_steps):
     """Computes feature and target data for the sequence. The features are the
     number of past steps used, and the targets are all the future values until
