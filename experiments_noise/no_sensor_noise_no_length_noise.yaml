@@ -1,0 +1,28 @@
+dataset:
+  script_path: ../datasets/normal_experiment.py
+  length_std: 0.0
+  length_mean: 20
+  noise_std: 0.0
+  length: 10000
+  nb_past_steps: 30
+  nb_future_steps: 1
+  train_fraction: 0.6
+  valid_fraction: 0.2
+  test_fraction: 0.2
+model:
+  script_path: ../models/basic_lstm_independent_keras.py
+  model_cfg:
+    nb_lstm_states: 32
+optimizer:
+  script_path: ../optimizers/adam_keras.py
+  learning_rate: 1e-4
+loss_function:
+  script_path: ../loss_functions/nll_keras.py
+train:
+  script_path: ../train/train_keras.py
+  artifacts_path: ../artifacts/no_sensor_noise_no_length_noise/
+  batch_size: 128
+  epochs: 1000
+  patience: 1000
+  shuffle: True
+  seed: 0
