@@ -2,8 +2,30 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import numpy as np
 import utils
+import os
+import glob
 
 def load_dataset(cfg):
+    if os.path.basename(cfg['xml_path']) == 'all':
+        print("loading training data for all patients ...")
+        xmls = os.path.join(os.path.dirname(cfg['xml_path']), "*.xml")
+        xml_paths = glob.glob(xmls)
+        tups = []
+        for xml_path in xml_paths:
+            cfg['xml_path'] = xml_path
+            tups.append(load_data(cfg))
+        x_train = np.concatenate([t[0] for t in tups], axis=0)
+        y_train = np.concatenate([t[1] for t in tups], axis=0)
+        x_valid = np.concatenate([t[2] for t in tups], axis=0)
+        y_valid = np.concatenate([t[3] for t in tups], axis=0)
+        x_test = np.concatenate([t[4] for t in tups], axis=0)
+        y_test = np.concatenate([t[5] for t in tups], axis=0)
+        return x_train, y_train, x_valid, y_valid, x_test, y_test
+    else:
+        x_train, y_train, x_valid, y_valid, x_test, y_test = load_data(cfg)
+        return x_train, y_train, x_valid, y_valid, x_test, y_test
+
+def load_data(cfg):
     xml_path        = cfg['xml_path']
     nb_past_steps   = int(cfg['nb_past_steps'])
     nb_future_steps = int(cfg['nb_future_steps'])
@@ -13,7 +35,6 @@ def load_dataset(cfg):
 
     xs, ys = load_glucose_data(xml_path, nb_past_steps, nb_future_steps)
     ys = np.expand_dims(ys, axis=1)
-    print(ys.shape)
 
     x_train, x_valid, x_test = utils.split_data(xs, train_fraction,
             valid_fraction, test_fraction)
@@ -40,8 +61,10 @@ def load_glucose_data(xml_path, nb_past_steps, nb_future_steps):
     nd_glucose_level = df_glucose_level.values
     consecutive_segments = np.split(nd_glucose_level, idx_breaks.flatten())
 
+    # TODO: temporary work-around for fair comparison
+    nb_past_steps_tmp = 36
     consecutive_segments = [c for c in consecutive_segments if len(c) >=
-            nb_past_steps+nb_future_steps]
+            nb_past_steps_tmp+nb_future_steps]
 
     sups = [utils.sequence_to_supervised(c, nb_past_steps, nb_future_steps) for
             c in consecutive_segments]
