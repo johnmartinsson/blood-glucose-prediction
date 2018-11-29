@@ -6,7 +6,8 @@ def load():
 def tf_nll(y_true, y_pred):
     y_var = y_pred[:,:1]
     y_mean = y_pred[:,1:]
-    y_std  = tf.sqrt(y_var)
+    #y_std  = tf.sqrt(y_var)
+    y_std  = y_var
 
     dist = tf.distributions.Normal(loc=y_mean, scale=y_std)
     probs = dist.prob(y_true)
