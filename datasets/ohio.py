@@ -61,10 +61,8 @@ def load_glucose_data(xml_path, nb_past_steps, nb_future_steps):
     nd_glucose_level = df_glucose_level.values
     consecutive_segments = np.split(nd_glucose_level, idx_breaks.flatten())
 
-    # TODO: temporary work-around for fair comparison
-    nb_past_steps_tmp = 36
     consecutive_segments = [c for c in consecutive_segments if len(c) >=
-            nb_past_steps_tmp+nb_future_steps]
+            nb_past_steps+nb_future_steps]
 
     sups = [utils.sequence_to_supervised(c, nb_past_steps, nb_future_steps) for
             c in consecutive_segments]
