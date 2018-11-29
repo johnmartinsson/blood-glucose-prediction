@@ -166,26 +166,32 @@ def plot_nll(model, x_test, y_test, cfg):
     # load the trained weights
     model.load_weights(os.path.join(cfg['train']['artifacts_path'], "model.hdf5"))
 
+    day = (24*60/5)
+
     y_pred      = model.predict(x_test)
-    y_pred_std  = y_pred[:,0][:100]/scale
-    #y_pred_var  = y_pred_std**2
-    y_pred_mean = y_pred[:,1][:100]/scale
-    y_true      = y_test[:,0][:100]/scale
+    y_pred_std  = y_pred[:,0][:day]/scale
+    y_pred_mean = y_pred[:,1][:day]/scale
+    y_true      = y_test[:,0][:day]/scale
 
     xs = np.arange(len(y_true))
     plt.clf()
-    plt.ylim([-2.5, 2.5])
-    #plt.ylim([0, 400])
+    plt.ylim([0, 400])
     plt.plot(xs, y_true)
     plt.plot(xs, y_pred_mean)
     plt.fill_between(xs, y_pred_mean-y_pred_std, y_pred_mean+y_pred_std,
             alpha=0.5, edgecolor='#CC4F1B', facecolor='#FF9848')
-    save_path = os.path.join(cfg['train']['artifacts_path'], "nll_plot.png") #"{}.png".format(basename)
+    plt.xlabel("Time")
+    plt.ylabel("Glucose Concentration [mg/dl]")
+    save_path = os.path.join(cfg['train']['artifacts_path'], "nll_plot.png")
     print("saving plot to: ", save_path)
-    #plt.show()
     plt.savefig(save_path)
 
-def plot_nll(model, x_test, y_test, cfg):
+def plot_seg(model, x_test, y_test, cfg):
+    if 'xml_path' in cfg['dataset']:
+        basename = os.path.basename(cfg['dataset']['xml_path'])
+        patient_id = basename.split('-')[0]
+    else:
+        patient_id = ""
     if 'scale' in cfg['dataset']:
         scale = float(cfg['dataset']['scale'])
     else:
@@ -199,8 +205,19 @@ def plot_nll(model, x_test, y_test, cfg):
     y_pred_mean = y_pred[:,1][:]/scale
     y_true      = y_test[:,0][:]/scale
 
-    plt.clf()
-    plt.plot(y_true, y_pred_mean, 'o')
+    data = np.loadtxt('seg.csv')
+
+    fig, ax = plt.subplots()
+    ax.set_title('Patient {} SEG'.format(patient_id))
+    ax.set_xlabel('Reference Concentration [mg/dl]')
+    ax.set_ylabel('Predicted Concentration [mg/dl]')
+    cax = ax.imshow(np.transpose(data), origin='lower', interpolation='nearest')
+    cbar = fig.colorbar(cax, ticks=[0.25, 1.0, 2.0, 3.0, 3.75], orientation='vertical')
+    cbar.ax.set_yticklabels(['None', 'Mild', 'Moderate', 'High', 'Extreme'],
+            rotation=90, va='center')
+
+    plt.scatter(references, predictions, s=25, facecolors='white', edgecolors='black')
+
     save_path = os.path.join(cfg['train']['artifacts_path'], "seg_plot.png")
     print("saving plot to: ", save_path)
     plt.savefig(save_path)
