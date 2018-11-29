@@ -1,25 +1,27 @@
 dataset:
-  script_path: ../datasets/ohio.py
-  xml_path: /media/john/SCHLIEP/OhioT1DM-training/570-ws-training.xml
-  param_nb_past_steps: [6]
-  nb_future_steps: 6
+  script_path: ../datasets/normal_experiment.py
+  length_std: 0.0
+  length_mean: 20
+  noise_std: 0.0
+  length: 10000
+  nb_past_steps: 30
+  nb_future_steps: 1
   train_fraction: 0.6
   valid_fraction: 0.2
   test_fraction: 0.2
-  scale: 0.01
 model:
   script_path: ../models/basic_lstm_independent_keras.py
-  param_nb_lstm_states: [128]
+  nb_lstm_states: 32
 optimizer:
   script_path: ../optimizers/adam_keras.py
-  param_learning_rate: [1e-3]
+  learning_rate: 1e-4
 loss_function:
   script_path: ../loss_functions/nll_keras.py
 train:
   script_path: ../train/train_keras.py
-  artifacts_path: ../artifacts/570_nll/
+  artifacts_path: ../artifacts/no_sensor_noise_no_length_noise/
   batch_size: 128
-  epochs: 1000
+  epochs: 10000
   patience: 100
   shuffle: True
   seed: 0
