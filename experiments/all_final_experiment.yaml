@@ -4,8 +4,8 @@ dataset:
   nb_past_steps: 12
   param_nb_future_steps: [6, 12]
   train_fraction: 0.8
-  valid_fraction: 0.0
-  test_fraction: 0.2
+  valid_fraction: 0.2
+  test_fraction: 0.0
   scale: 0.01
 model:
   script_path: ../models/lstm_experiment_keras.py

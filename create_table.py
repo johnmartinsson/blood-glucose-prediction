@@ -89,8 +89,8 @@ def separate_table():
 def main():
     all_table("rmse")
     all_table("seg")
-    print("patient specific training ...")
-    separate_table()
+    #print("patient specific training ...")
+    #separate_table()
 
 if __name__ == "__main__":
     main()
