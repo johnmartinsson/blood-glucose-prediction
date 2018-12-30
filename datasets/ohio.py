@@ -20,6 +20,8 @@ def load_dataset(cfg):
         y_valid = np.concatenate([t[3] for t in tups], axis=0)
         x_test = np.concatenate([t[4] for t in tups], axis=0)
         y_test = np.concatenate([t[5] for t in tups], axis=0)
+
+        cfg['xml_path'] = 'all'
         return x_train, y_train, x_valid, y_valid, x_test, y_test
     else:
         x_train, y_train, x_valid, y_valid, x_test, y_test = load_data(cfg)
