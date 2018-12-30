@@ -12,12 +12,15 @@ import importlib.util
 import tensorflow as tf
 import itertools
 import copy
+import datetime
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
                     stream=sys.stdout)
 
 import numpy as np
 import metrics
+import seaborn as sns
+sns.set()
 
 import matplotlib.pyplot as plt
 
@@ -42,13 +45,13 @@ def main(yaml_filepath, mode):
         pp.pprint(cfg)
 
         #print("loading dataset ...")
-        nb_past_steps = cfg['dataset']['nb_past_steps']
-        nb_past_steps_tmp = 36
-        cfg['dataset']['nb_past_steps'] = nb_past_steps_tmp
+        #nb_past_steps = cfg['dataset']['nb_past_steps']
+        #nb_past_steps_tmp = 36
+        #cfg['dataset']['nb_past_steps'] = nb_past_steps_tmp
         x_train, y_train, x_valid, y_valid, x_test, y_test = module_dataset.load_dataset(cfg['dataset'])
-        x_train = x_train[:,-nb_past_steps:,:]
-        x_valid = x_valid[:,-nb_past_steps:,:]
-        x_test = x_test[:,-nb_past_steps:,:]
+        #x_train = x_train[:,-nb_past_steps:,:]
+        #x_valid = x_valid[:,-nb_past_steps:,:]
+        #x_test = x_test[:,-nb_past_steps:,:]
         print("x_train.shape: ", x_train.shape)
         print("y_train.shape: ", y_train.shape)
         print("x_valid.shape: ", x_valid.shape)
@@ -95,6 +98,8 @@ def main(yaml_filepath, mode):
             plot_nll(model, x_test, y_test, cfg)
         if mode == 'plot_seg':
             plot_seg(model, x_test, y_test, cfg)
+        if mode == 'plot_dist':
+            plot_target_distribution(y_test, cfg)
 
         # evaluation mode
         if mode == 'evaluate':
@@ -117,10 +122,12 @@ def evaluate(model, x_test, y_test, cfg):
     model.load_weights(weights_path)
 
     y_pred = model.predict(x_test)[:,1].flatten()/scale
+    y_std  = model.predict(x_test)[:,0].flatten()/scale
     y_test = y_test.flatten()/scale
     t0 = x_test[:,-1,0]/scale
 
     rmse = metrics.root_mean_squared_error(y_test, y_pred)
+    print("patient id: ", patient_id)
     with open(os.path.join(cfg['train']['artifacts_path'], "{}_rmse.txt".format(patient_id)), "w") as outfile:
         outfile.write("{}\n".format(rmse))
 
@@ -135,6 +142,9 @@ def evaluate(model, x_test, y_test, cfg):
     t0_seg = metrics.surveillance_error(y_test, t0)
     with open(os.path.join(cfg['train']['artifacts_path'], "{}_t0_seg.txt".format(patient_id)), "w") as outfile:
         outfile.write("{}\n".format(t0_seg))
+
+    with open(os.path.join(cfg['train']['artifacts_path'], "{}_mean_std.txt".format(patient_id)), "w") as outfile:
+        outfile.write("{}\n".format(np.mean(y_std)))
 
     print("RMSE: ", rmse)
     print("t0 RMSE: ", t0_rmse)
@@ -157,7 +167,29 @@ def train(model, module_train, x_train, y_train, x_valid, y_valid, cfg):
 
     return model
 
+def plot_target_distribution(y_test, cfg):
+    if 'xml_path' in cfg['dataset']:
+        basename = os.path.basename(cfg['dataset']['xml_path'])
+        patient_id = basename.split('-')[0]
+    else:
+        patient_id = ""
+    if 'scale' in cfg['dataset']:
+        scale = float(cfg['dataset']['scale'])
+    else:
+        scale = 1.0
+
+    plt.figure()
+    sns.distplot(y_test.flatten()/scale, kde=False, norm_hist=True)
+    save_path = os.path.join(cfg['train']['artifacts_path'], "{}_dist_plot.pdf".format(patient_id))
+    print("saving plot to: ", save_path)
+    plt.savefig(save_path, dpi=300)
+
 def plot_nll(model, x_test, y_test, cfg):
+    if 'xml_path' in cfg['dataset']:
+        basename = os.path.basename(cfg['dataset']['xml_path'])
+        patient_id = basename.split('-')[0]
+    else:
+        patient_id = ""
     if 'scale' in cfg['dataset']:
         scale = float(cfg['dataset']['scale'])
     else:
@@ -166,25 +198,39 @@ def plot_nll(model, x_test, y_test, cfg):
     # load the trained weights
     model.load_weights(os.path.join(cfg['train']['artifacts_path'], "model.hdf5"))
 
-    day = (24*60/5)
+    #day = (24*60//5)
+    start_index = 0
+    hours = 8
+    to_plot=hours*12
+    ticks_per_hour = 12
+    ticks = [i*ticks_per_hour for i in range(hours+1)]
+    ticks_labels = [str(i) for i in range(hours+1)]
 
     y_pred      = model.predict(x_test)
-    y_pred_std  = y_pred[:,0][:day]/scale
-    y_pred_mean = y_pred[:,1][:day]/scale
-    y_true      = y_test[:,0][:day]/scale
 
-    xs = np.arange(len(y_true))
-    plt.clf()
-    plt.ylim([0, 400])
-    plt.plot(xs, y_true)
-    plt.plot(xs, y_pred_mean)
-    plt.fill_between(xs, y_pred_mean-y_pred_std, y_pred_mean+y_pred_std,
-            alpha=0.5, edgecolor='#CC4F1B', facecolor='#FF9848')
-    plt.xlabel("Time")
-    plt.ylabel("Glucose Concentration [mg/dl]")
-    save_path = os.path.join(cfg['train']['artifacts_path'], "nll_plot.png")
-    print("saving plot to: ", save_path)
-    plt.savefig(save_path)
+    for i in range(5):
+        start_index = i*to_plot
+        y_pred_std  = y_pred[:,0][start_index:start_index+to_plot]/scale
+        y_pred_mean = y_pred[:,1][start_index:start_index+to_plot]/scale
+        y_true      = y_test[:,0][start_index:start_index+to_plot]/scale
+
+        xs = np.arange(len(y_true))
+        plt.clf()
+        plt.ylim([0, 400])
+        #plt.ylim([-2, 2])
+        plt.plot(xs, y_true, label='ground truth', linestyle='--')
+        plt.plot(xs, y_pred_mean, label='prediction')
+        plt.fill_between(xs, y_pred_mean-y_pred_std, y_pred_mean+y_pred_std,
+                alpha=0.5, edgecolor='#CC4F1B', facecolor='#FF9848')
+        plt.xlabel("Time [h]")
+        plt.ylabel("Glucose Concentration [mg/dl]")
+        plt.legend(loc='upper right')
+        #plt.xlabel("y")
+        #plt.ylabel("x")
+        plt.xticks(ticks, ticks_labels)
+        save_path = os.path.join(cfg['train']['artifacts_path'], "{}_nll_plot_{}.pdf".format(patient_id, i))
+        print("saving plot to: ", save_path)
+        plt.savefig(save_path, dpi=300)
 
 def plot_seg(model, x_test, y_test, cfg):
     if 'xml_path' in cfg['dataset']:
@@ -216,11 +262,11 @@ def plot_seg(model, x_test, y_test, cfg):
     cbar.ax.set_yticklabels(['None', 'Mild', 'Moderate', 'High', 'Extreme'],
             rotation=90, va='center')
 
-    plt.scatter(references, predictions, s=25, facecolors='white', edgecolors='black')
+    plt.scatter(y_true, y_pred_mean, s=25, facecolors='white', edgecolors='black')
 
-    save_path = os.path.join(cfg['train']['artifacts_path'], "seg_plot.png")
+    save_path = os.path.join(cfg['train']['artifacts_path'], "{}_seg_plot.pdf".format(patient_id))
     print("saving plot to: ", save_path)
-    plt.savefig(save_path)
+    plt.savefig(save_path, dpi=300)
 
 def load_module(script_path):
     spec = importlib.util.spec_from_file_location("module.name", script_path)
