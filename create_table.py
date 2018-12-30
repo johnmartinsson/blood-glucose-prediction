@@ -53,54 +53,6 @@ def all_table(metric_name):
     print("$\mu$ & {:.3f} & {:.3f} & {:.3f} & {:.3f} \\\\".format(np.mean(lstm_means_6), np.mean(t0_means_6), np.mean(lstm_means_12), np.mean(t0_means_12)))
     print("$\sigma$ & $\pm{:.3f}$ & $\pm{:.3f}$ & $\pm{:.3f}$ & $\pm{:.3f}$ \\\\".format(np.std(lstm_means_6), np.std(t0_means_6), np.std(lstm_means_12), np.std(t0_means_12)))
 
-
-
-def all_table_rmse():
-    artifacts_path = "artifacts/all_final_experiment"
-    patient_ids = ['559', '570', '588', '563', '575', '591']
-    d = {}
-    nb_future_stepss = [6, 12]
-    seeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    for patient_id in patient_ids:
-        d[patient_id] = {
-            "{}_lstm".format(6) : [],
-            "{}_lstm".format(12) : [],
-            "{}_t0".format(6) : [],
-            "{}_t0".format(12) : []
-        }
-        for nb_future_steps in nb_future_stepss:
-            for seed in seeds:
-                experiment_name = "nb_future_steps_{}_seed_{}_".format(nb_future_steps, seed)
-                experiment_path = os.path.join(artifacts_path, experiment_name)
-                with open(os.path.join(experiment_path, "{}_rmse.txt".format(patient_id)), "r") as f:
-                    line = f.readlines()[0]
-                    rmse = float(line)
-                    d[patient_id]["{}_lstm".format(nb_future_steps)].append(rmse)
-                with open(os.path.join(experiment_path, "{}_t0_rmse.txt".format(patient_id)), "r") as f:
-                    line = f.readlines()[0]
-                    rmse = float(line)
-                    d[patient_id]["{}_t0".format(nb_future_steps)].append(rmse)
-
-
-    lstm_means_6 = []
-    lstm_means_12 = []
-    t0_means_6 = []
-    t0_means_12 = []
-    for patient_id in patient_ids:
-        lstm_rmses_6 = d[patient_id]["{}_lstm".format(6)]
-        lstm_rmses_12 = d[patient_id]["{}_lstm".format(12)]
-        t0_rmses_6 = d[patient_id]["{}_t0".format(6)]
-        t0_rmses_12 = d[patient_id]["{}_t0".format(12)]
-        if not patient_id == 'all':
-            lstm_means_6.append(np.mean(lstm_rmses_6))
-            lstm_means_12.append(np.mean(lstm_rmses_12))
-            t0_means_6.append(np.mean(t0_rmses_6))
-            t0_means_12.append(np.mean(t0_rmses_12))
-        print("{} & ${:.2f} \pm {:.2f}$ & ${:.2f}$ & ${:.2f} \pm {:.2f}$ & ${:.2f}$ \\\\".format(patient_id, np.mean(lstm_rmses_6), np.std(lstm_rmses_6), np.mean(t0_rmses_6), np.mean(lstm_rmses_12), np.std(lstm_rmses_12), np.mean(t0_rmses_12)))
-
-    print("$\mu$ & {:.2f} & {:.2f} & {:.2f} & {:.2f} \\\\".format(np.mean(lstm_means_6), np.mean(t0_means_6), np.mean(lstm_means_12), np.mean(t0_means_12)))
-    print("$\sigma$ & {:.2f} & {:.2f} & {:.2f} & {:.2f} \\\\".format(np.std(lstm_means_6), np.std(t0_means_6), np.std(lstm_means_12), np.std(t0_means_12)))
-
 def separate_table():
     artifacts_paths = glob.glob("artifacts/*_final_experiment")
     patient_ids = [os.path.basename(artifacts_path).split("_")[0] for artifacts_path in artifacts_paths]
@@ -108,6 +60,8 @@ def separate_table():
     nb_future_stepss = [6, 12]
     seeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     for artifacts_path, patient_id in zip(artifacts_paths, patient_ids):
+        if patient_id == 'all':
+            continue
         d[patient_id] = {6 : [], 12 : []}
         for nb_future_steps in nb_future_stepss:
             for seed in seeds:
@@ -122,11 +76,12 @@ def separate_table():
     means_6 = []
     means_12 = []
     for patient_id in patient_ids:
+        if patient_id == 'all':
+            continue
         rmses_6 = d[patient_id][6]
         rmses_12 = d[patient_id][12]
-        if not patient_id == 'all':
-            means_6.append(np.mean(rmses_6))
-            means_12.append(np.mean(rmses_12))
+        means_6.append(np.mean(rmses_6))
+        means_12.append(np.mean(rmses_12))
         print("{} | {} \pm {} | {} \pm {}".format(patient_id, np.mean(rmses_6), np.std(rmses_6), np.mean(rmses_12), np.std(rmses_12)))
     print(np.mean(means_6))
     print(np.mean(means_12))
@@ -134,6 +89,8 @@ def separate_table():
 def main():
     all_table("rmse")
     all_table("seg")
+    print("patient specific training ...")
+    separate_table()
 
 if __name__ == "__main__":
     main()
