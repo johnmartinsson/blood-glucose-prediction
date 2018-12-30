@@ -33,5 +33,3 @@ and fire up tensorboard.
     $> sh run_final_experiments.sh
     $> sh evaluate_final_experiments.sh
     $> python create_table.py
-
-and so on for mse and gmse.
