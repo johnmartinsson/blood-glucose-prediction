@@ -96,6 +96,8 @@ def main(yaml_filepath, mode):
             train(model, module_train, x_train, y_train, x_valid, y_valid, cfg)
         if mode == 'plot_nll':
             plot_nll(model, x_test, y_test, cfg)
+        if mode == 'plot_noise_experiment':
+            plot_noise_experiment(model, x_test, y_test, cfg)
         if mode == 'plot_seg':
             plot_seg(model, x_test, y_test, cfg)
         if mode == 'plot_dist':
@@ -231,6 +233,45 @@ def plot_nll(model, x_test, y_test, cfg):
         save_path = os.path.join(cfg['train']['artifacts_path'], "{}_nll_plot_{}.pdf".format(patient_id, i))
         print("saving plot to: ", save_path)
         plt.savefig(save_path, dpi=300)
+
+def plot_noise_experiment(model, x_test, y_test, cfg):
+    # load the trained weights
+    model.load_weights(os.path.join(cfg['train']['artifacts_path'], "model.hdf5"))
+
+    #day = (24*60//5)
+    start_index = 0
+    hours = 8
+    to_plot=hours*12
+    ticks_per_hour = 12
+    ticks = [i*ticks_per_hour for i in range(hours+1)]
+    ticks_labels = [str(i) for i in range(hours+1)]
+
+    y_pred      = model.predict(x_test)
+
+    start_index = 0
+    y_pred_std  = y_pred[:,0][start_index:start_index+to_plot]
+    y_pred_mean = y_pred[:,1][start_index:start_index+to_plot]
+    y_true      = y_test[:,0][start_index:start_index+to_plot]
+
+    xs = np.arange(len(y_true))
+    plt.clf()
+    #plt.ylim([0, 400])
+    plt.ylim([-2, 2])
+    plt.plot(xs, y_true, label='ground truth', linestyle='--')
+    plt.plot(xs, y_pred_mean, label='prediction')
+    plt.fill_between(xs, y_pred_mean-y_pred_std, y_pred_mean+y_pred_std,
+            alpha=0.5, edgecolor='#CC4F1B', facecolor='#FF9848')
+    #plt.xlabel("Time [h]")
+    #plt.ylabel("Glucose Concentration [mg/dl]")
+    plt.legend(loc='upper right')
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.xticks(ticks, ticks_labels)
+    save_path = os.path.join(cfg['train']['artifacts_path'], "noise_experiment_plot.pdf")
+    print("saving plot to: ", save_path)
+    plt.savefig(save_path, dpi=300)
+
+
 
 def plot_seg(model, x_test, y_test, cfg):
     if 'xml_path' in cfg['dataset']:
