@@ -12,6 +12,7 @@ dataset:
 model:
   script_path: ../models/lstm_experiment_keras.py
   nb_lstm_states: 128
+  activation_function: exp
 optimizer:
   script_path: ../optimizers/adam_keras.py
   learning_rate: 1e-5
