@@ -3,6 +3,16 @@ import tensorflow as tf
 import tensorflow.keras.layers as KL
 import tensorflow.keras.models as KM
 
+def get_activation_function_by_name(name='exp'):
+    if name == 'exp':
+        return tf.exp
+    elif name == 'softplus':
+        return tf.math.softplus
+    elif name == 'relu':
+        return tf.nn.relu
+    else:
+        raise ValueError("Actiation function: {} is not supported.".format(name))
+
 def load(input_shape, output_shape, cfg):
     nb_lstm_states = int(cfg['nb_lstm_states'])
 
@@ -20,7 +30,8 @@ def load(input_shape, output_shape, cfg):
 
     mu = KL.Dense(1)(x)
     std = KL.Dense(1)(x)
-    std = KL.Activation(tf.exp, name="exponential_activation")(std)
+    activation_fn = get_activation_function_by_name(cfg['activation_function'])
+    std = KL.Activation(activation_fn, name="exponential_activation")(std)
 
     output = KL.Concatenate(axis=-1)([std, mu])
     model = KM.Model(inputs=[inputs], outputs=[output])
