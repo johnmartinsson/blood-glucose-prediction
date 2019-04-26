@@ -38,6 +38,8 @@ and fire up tensorboard.
 
     # Run the hyperparameter search
     $> python run.py --file=experiments/all_nb_lstm_state_nb_past_steps_search.yaml -m train
+    # Evaluate the trained models
+    $> python run.py --file=experiments/all_nb_lstm_state_nb_past_steps_search.yaml -m ealuate
     # Hyperparam search plots
     $> python plot_parameter_search.py artifacts/all_nb_lstm_states_nb_past_steps/
 
