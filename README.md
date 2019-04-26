@@ -33,3 +33,16 @@ and fire up tensorboard.
     $> sh run_final_experiments.sh
     $> sh evaluate_final_experiments.sh
     $> python create_table.py
+
+# Reproduce plots
+
+    # Hyperparam search plots
+    $> python plot_parameter_search.py artifacts/all_nb_lstm_states_nb_past_steps/
+
+The plots will be in the working directory.
+    
+    # Surveillance error grid plots and prediction plots
+    $> sh run_final_plots.sh
+    
+The plots will be in the artifacts folders.
+
