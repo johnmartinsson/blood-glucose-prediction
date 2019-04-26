@@ -256,7 +256,7 @@ def plot_noise_experiment(model, x_test, y_test, cfg):
     xs = np.arange(len(y_true))
     plt.clf()
     #plt.ylim([0, 400])
-    plt.ylim([-2, 2])
+    plt.ylim([-3, 3])
     plt.plot(xs, y_true, label='ground truth', linestyle='--')
     plt.plot(xs, y_pred_mean, label='prediction')
     plt.fill_between(xs, y_pred_mean-y_pred_std, y_pred_mean+y_pred_std,
