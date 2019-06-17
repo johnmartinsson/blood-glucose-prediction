@@ -1,3 +1,9 @@
+# Citation
+
+Please cite this work if you find this repository useful for your research:
+
+    In Proceedings of the 3rd International Workshop on Knowledge Discovery in Healthcare Data co-located with the 27th International Joint Conference on Artificial Intelligence and the 23rd European Conference on Artificial Intelligence (IJCAI-ECAI), 64–68, Jul 2018
+
 # Versions
 
 To reproduce the results in [Automatic blood glucose prediction with confidence
