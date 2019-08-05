@@ -2,8 +2,8 @@
 
 Please cite this work if you find this repository useful for your research:
 
-    John Martinsson et al. “Automatic blood glucose prediction with confidenceusing recurrent neural networks”. 
-    In:3rd International  Workshop  on  Know-ledge Discovery in Healthcare Data, KDH@ IJCAI-ECAI 2018, 
+    John Martinsson et al. “Automatic blood glucose prediction with confidence using recurrent neural networks”. 
+    In 3rd International  Workshop  on  Knowledge Discovery in Healthcare Data, KDH@ IJCAI-ECAI 2018, 
     13 July 2018.2018, pp. 64–68.
 
 # Versions
