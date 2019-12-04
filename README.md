@@ -1,15 +1,10 @@
 # Citation
 
+- Article: https://link.springer.com/article/10.1007%2Fs41666-019-00059-y
+
 Please cite this work if you find this repository useful for your research:
 
-    John Martinsson et al. “Automatic blood glucose prediction with confidence using recurrent neural networks”. 
-    In 3rd International  Workshop  on  Knowledge Discovery in Healthcare Data, KDH@ IJCAI-ECAI 2018, 
-    13 July 2018.2018, pp. 64–68.
-
-# Versions
-
-To reproduce the results in [Automatic blood glucose prediction with confidence
-using recurrent neural networks](http://ceur-ws.org/Vol-2148/paper10.pdf) revert to commit: [a5f0ebcf45f87b63d118dcad5e96eb505bb4269a](https://github.com/johnmartinsson/blood-glucose-prediction/commit/a5f0ebcf45f87b63d118dcad5e96eb505bb4269a) and follow the README.
+    Martinsson, J., Schliep, A., Eliasson, B. et al. J Healthc Inform Res (2019). https://doi.org/10.1007/s41666-019-00059-y
 
 # Prerequisites
 The code is designed to be run on the OhioT1DM Dataset. So to use it the xml_path in e.g. the example experiment YAML configuration need to point to the path on disk where the XML data files are. E.g., change "/home/ubuntu/ohio_data/OhioT1DM-training/" to point to Ohiot1DM-training folder containing the XML files for the ohio dataset.
@@ -58,3 +53,7 @@ The plots will be in the working directory.
     
 The plots will be in the artifacts folders.
 
+# Versions
+
+To reproduce the results in [Automatic blood glucose prediction with confidence
+using recurrent neural networks](http://ceur-ws.org/Vol-2148/paper10.pdf) revert to commit: [a5f0ebcf45f87b63d118dcad5e96eb505bb4269a](https://github.com/johnmartinsson/blood-glucose-prediction/commit/a5f0ebcf45f87b63d118dcad5e96eb505bb4269a) and follow the README.
