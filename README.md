@@ -1,10 +1,20 @@
-# Citation
+The official implementation of the paper "Blood Glucose Prediction with Variance Estimation Using Recurrent Neural Networks".
 
-- Article: https://link.springer.com/article/10.1007%2Fs41666-019-00059-y
+[Paper](https://johnmartinsson.org/publications/2020/blood-glucose-prediction-with-variance-estimation)
 
-Please cite this work if you find this repository useful for your research:
+Cite as:
 
-    Martinsson, J., Schliep, A., Eliasson, B. et al. J Healthc Inform Res (2019). https://doi.org/10.1007/s41666-019-00059-y
+    @article{Martinsson2020,
+      author = {Martinsson, John and Schliep, Alexander and Eliasson, Bj{\"{o}}rn and Mogren, Olof},
+      title = {Blood Glucose Prediction with Variance Estimation Using Recurrent Neural Networks},
+      journal = {Journal of Healthcare Informatics Research},
+      year = {2020},
+      volume = {4},
+      number = {1},
+      pages = {1--18},
+      doi = {10.1007/s41666-019-00059-y},
+      url = {https://link.springer.com/article/10.1007/s41666-019-00059-y}
+    }
 
 # Prerequisites
 The code is designed to be run on the OhioT1DM Dataset. So to use it the xml_path in e.g. the example experiment YAML configuration need to point to the path on disk where the XML data files are. E.g., change "/home/ubuntu/ohio_data/OhioT1DM-training/" to point to Ohiot1DM-training folder containing the XML files for the ohio dataset.
